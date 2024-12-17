@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazine System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { margin: 10px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Magazine System</h1>
+
+    <h2>Available Authors</h2>
+    <button onclick="getAuthors()">Show Authors</button>
+    <ul id="authors"></ul>
+
+    <h2>Available Magazines</h2>
+    <button onclick="getMagazines()">Show Magazines</button>
+    <ul id="magazines"></ul>
+
+    <h2>Add an Article</h2>
+    <input type="text" id="author" placeholder="Author Name">
+    <input type="text" id="magazine" placeholder="Magazine Name">
+    <input type="text" id="title" placeholder="Article Title">
+    <button onclick="addArticle()">Add Article</button>
+    <p id="result"></p>
+
+    <script>
+        function getAuthors() {
+            fetch('/authors')
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById("authors");
+                    list.innerHTML = "";
+                    data.forEach(author => {
+                        const li = document.createElement("li");
+                        li.innerText = author;
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        function getMagazines() {
+            fetch('/magazines')
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById("magazines");
+                    list.innerHTML = "";
+                    data.forEach(mag => {
+                        const li = document.createElement("li");
+                        li.innerText = mag;
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        function addArticle() {
+            const author = document.getElementById("author").value;
+            const magazine = document.getElementById("magazine").value;
+            const title = document.getElementById("title").value;
+
+            fetch('/add_article', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ author, magazine, title })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("result").innerText = data.message || data.error;
+            });
+        }
+    </script>
+</body>
+</html>
